@@ -14,14 +14,12 @@ let model, webcam, labelContainer, maxPredictions;
   });
   const poseDetector = new PoseDetector();
   await poseDetector.init();
+
+  const port = chrome.runtime.connect({ name: "content-script-port" });
+
   setInterval(async () => {
-    const [a, b, c] = await poseDetector.predict(webcam.video);
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    });
-    const response = await chrome.tabs.sendMessage(tab.id, {
-      greeting: "hello",
-    });
+    const a = await poseDetector.predict(webcam.video);
+    console.log(a);
+    port.postMessage({ data: a });
   }, 1000);
 })();

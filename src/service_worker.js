@@ -22,3 +22,19 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 });
 
 console.log("service worker", chrome.offscreen);
+
+chrome.runtime.onConnect.addListener((port) => {
+  console.assert(port.name === "content-script-port");
+  if (port.name === "content-script-port") {
+    port.onMessage.addListener((message) => {
+      console.log("Message from content script:", message);
+      sendMessageToActiveTab(message);
+    });
+  }
+});
+
+function sendMessageToActiveTab(message) {
+  return chrome.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => chrome.tabs.sendMessage(tabs[0].id, message));
+}

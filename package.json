@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "prestart": "rimraf ./dist",
+    "prestart": "rimraf ./dist && rimraf ./build && rimraf ./.parcel-cache",
     "start": "parcel watch src/manifest.json --host localhost",
     "build": "parcel build src/manifest.json"
   },
