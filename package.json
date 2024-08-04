@@ -1,0 +1,27 @@
+{
+  "name": "repo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "prestart": "rimraf ./dist",
+    "start": "parcel watch src/manifest.json --host localhost",
+    "build": "parcel build src/manifest.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@parcel/config-webextension": "^2.12.0",
+    "@parcel/transformer-html": "^2.12.0",
+    "@tensorflow-models/posenet": "^2.2.2",
+    "@tensorflow/tfjs": "^4.20.0",
+    "parcel": "^2.12.0",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  },
+  "devDependencies": {
+    "@parcel/optimizer-data-url": "^2.12.0",
+    "@parcel/transformer-inline-string": "^2.12.0",
+    "buffer": "^6.0.3",
+    "process": "^0.11.10",
+    "rimraf": "^6.0.1"
+  }
+}
