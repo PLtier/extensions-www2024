@@ -1,47 +1,13 @@
 import Webcam from "./camera.js";
-import "@tensorflow/tfjs"; //used only to initialise the backend. Posenet library is very much outdated unfortunately, and cannot do this via normal setup.
+import * as tf from "@tensorflow/tfjs"; //used only to initialise the backend. Posenet library is very much outdated unfortunately, and cannot do this via normal setup.
 import * as posenet from "@tensorflow-models/posenet";
 import { padAndResizeTo } from "@tensorflow-models/posenet/dist/util";
 
 let model, webcam, labelContainer, maxPredictions;
 
 async function init() {
-  const modelURL = URL + "model.json";
-  const metadataURL = URL + "metadata.json";
-
-  // load the model and metadata
-  // Refer to tmPose.loadFromFiles() in the API to support files from a file picker
-  model = await tmPose.loadFromFiles();
-  maxPredictions = model.getTotalClasses();
-
-  // Convenience function to setup a webcam
-  const flip = true; // whether to flip the webcam
-  webcam = new tmPose.Webcam(200, 200, flip); // width, height, flip
-  await webcam.setup(); // request access to the webcam
-  webcam.play();
-  window.requestAnimationFrame(loop);
-
+  setInterval(predict, 1000);
   // append/get elements to the DOM
-}
-
-async function loop(timestamp) {
-  webcam.update(); // update the webcam frame
-  await predict();
-  window.requestAnimationFrame(loop);
-}
-
-async function predict() {
-  // Prediction #1: run input through posenet
-  // estimatePose can take in an image, video or canvas html element
-  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-  // Prediction 2: run input through teachable machine classification model
-  const prediction = await model.predict(posenetOutput);
-
-  for (let i = 0; i < maxPredictions; i++) {
-    const classPrediction =
-      prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-    console.log(classPrediction);
-  }
 }
 
 // =========================
@@ -88,6 +54,25 @@ async function estimatePose(sample, posenetModel, flipHorizontal = false) {
   return posenetOutput;
 }
 
+async function predict(poseOutput, model) {
+  const embeddings = tf.tensor([poseOutput]);
+  const logits = model.predict(embeddings);
+
+  const values = await logits.data();
+
+  const classes = [];
+  for (let i = 0; i < values.length; i++) {
+    classes.push({
+      probability: values[i],
+    });
+  }
+
+  embeddings.dispose();
+  logits.dispose();
+
+  return classes;
+}
+
 (async function () {
   console.log("OFFSCREEN");
   // await tf.ready();
@@ -107,5 +92,7 @@ async function estimatePose(sample, posenetModel, flipHorizontal = false) {
   });
   console.log(webcam);
   console.log("posenetModel", posenetModel);
-  console.log(await estimatePose(webcam.video, posenetModel));
+  const posenetOutput = await estimatePose(webcam.video, posenetModel);
+  const customModel = await tf.loadLayersModel("./model/model.json");
+  console.log(await predict(posenetOutput, customModel));
 })();
