@@ -4,8 +4,8 @@
 // console.log("service worker", posenet, padAndResizeTo);
 // because parcel unnecessarliy duplicate the .html files for every import or new URL used,
 // we will import it here, and then set the corresponding URL in storage af
-import urlOnboarding from "./onboarding.html";
-import urlOffscreen from "./offscreen.html";
+import urlOnboarding from "/src/contexts/extension_pages/onboarding.html";
+import urlOffscreen from "/src/contexts/offscreen_document/offscreen.html";
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   // set both URLs in storage
   console.log(chrome.storage);

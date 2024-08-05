@@ -1,7 +1,7 @@
-import Webcam from "./camera.js";
-import PoseDetector from "./utils/CustomPosenet.js";
+import Webcam from "/src/utils/Webcam.js";
+import PoseDetector from "/src/utils/PoseDetector.js";
 
-let model, webcam, labelContainer, maxPredictions;
+let webcam;
 
 (async function () {
   // await tf.ready();
